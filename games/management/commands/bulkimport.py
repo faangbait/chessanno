@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand, CommandError
 import glob
 from datetime import datetime
 import chess, chess.pgn
+from formatname import normalize
 
 from games.models import ChessGame
 from events.models import ChessEvent, ChessRound
@@ -32,9 +33,6 @@ class PGNImporter:
         self.game.headers.update(header_dict)
 
         return header_dict
-
-def romanicize_name(name: str) -> str:
-    return f"Test {name}"
 
 
 class Command(BaseCommand):
@@ -67,18 +65,18 @@ class Command(BaseCommand):
 
                 # Get the object of each player
                 white_player, w_created = ChessPlayer.objects.get_or_create(
-                    name=romanicize_name(importer.game.headers.get("White"))
+                    name=normalize(importer.game.headers.get("White"))
                 )
                 
                 black_player, b_created = ChessPlayer.objects.get_or_create(
-                    name=romanicize_name(importer.game.headers.get("Black"))
+                    name=normalize(importer.game.headers.get("Black"))
                 )
                 
-                white_elo = importer.game.headers.get("WhiteELO", None)
+                white_elo = importer.game.headers.get("WhiteElo", None)
                 if white_elo is not None:
                     white_elo = int(white_elo)
                 
-                black_elo = importer.game.headers.get("BlackELO", None)
+                black_elo = importer.game.headers.get("BlackElo", None)
                 if black_elo is not None:
                     black_elo = int(black_elo)
                 

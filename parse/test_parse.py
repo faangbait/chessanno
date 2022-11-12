@@ -28,3 +28,4 @@ def test_import():
     assert importer.date == datetime(2022, 5, 28)
     assert importer.game.headers.get("WhiteElo") == "2501"
     assert importer.game.headers.get("White") == "Priasmoro, Novendra"
+
