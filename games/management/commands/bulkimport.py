@@ -13,12 +13,15 @@ from players.models import ChessPlayer
 class PGNImporter:
     def __init__(self, filename: str):
         self.filename = filename
+        self.date = None
         with open(self.filename) as pgn:
             self.game = chess.pgn.read_game(pgn)
-            self.date = None
-            self.standardize_tags()
+            self.__standardize_tags()
 
-    def standardize_tags(self) -> dict:
+    def __standardize_tags(self) -> dict:
+        if self.game is None:
+            raise Exception
+
         header_dict = {}
 
         for k,v in self.game.headers.items():
@@ -44,9 +47,14 @@ class Command(BaseCommand):
         created_count = 0
 
         for file in files:
+            event = None
+            round = None
+            
             self.stdout.write(self.style.NOTICE('Processing "%s"' % file))
             try:
                 importer = PGNImporter(file)
+                if importer.game is None:
+                    raise Exception
                 
                 # Process the event, if specified
                 event_header = importer.game.headers.get("Event", None)
@@ -65,11 +73,11 @@ class Command(BaseCommand):
 
                 # Get the object of each player
                 white_player, w_created = ChessPlayer.objects.get_or_create(
-                    name=normalize(importer.game.headers.get("White"))
+                    name=normalize(importer.game.headers.get("White", "Unknown"))
                 )
                 
                 black_player, b_created = ChessPlayer.objects.get_or_create(
-                    name=normalize(importer.game.headers.get("Black"))
+                    name=normalize(importer.game.headers.get("Black", "Unknown"))
                 )
                 
                 white_elo = importer.game.headers.get("WhiteElo", None)
@@ -101,7 +109,7 @@ class Command(BaseCommand):
                         "black": black_player,
                         "white_elo": white_elo,
                         "black_elo": black_elo,
-                        "total_ply_count": int(importer.game.headers.get("TotalPlyCount")),
+                        "total_ply_count": int(importer.game.headers.get("TotalPlyCount",0)),
                         "imported_pgn": imported_pgn
                     }
                 )

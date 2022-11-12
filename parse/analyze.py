@@ -2,12 +2,9 @@ import chess
 import chess.engine
 
 def pov_eval(score: chess.engine.PovScore) -> int:
-    centipawns: chess.engine.Cp | chess.engine.Mate = score.pov(chess.WHITE)
+    centipawns = score.pov(chess.WHITE)
 
-    if centipawns.is_mate():
-        return 100000
-    else:
-        return centipawns.cp
+    return centipawns.score(mate_score=100000)
 
 
 def fish(fen: str, depth = 20) -> int:
@@ -15,5 +12,10 @@ def fish(fen: str, depth = 20) -> int:
     board = chess.Board(fen)
     info = engine.analyse(board, chess.engine.Limit(depth=depth))
     engine.quit()
-    return pov_eval(info["score"])
+
+    cp = info.get("score",None)
+
+    if cp is not None:
+        return pov_eval(cp)
+    return 0
 
