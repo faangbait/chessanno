@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block subsidebar %}
+<div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark" style="width: 160px">
+    <div class="d-flex flex-row justify-content-between">
+        <span class="fs-4">
+            <a href="{% url 'games:detail' chessgame.pk %}" class="text-white">&larrb;</a>
+        </span>
+        <span class="fs-4">
+            {% if last_href %}
+                <a href="{{ last_href }}" class="text-white">&larr;</a>
+            {% else %}
+                &larr;
+            {% endif %}
+        </span>
+        <span class="fs-4">
+            {% if next_href %}
+                <a href="{{ next_href }}" class="text-white">&rarr;</a>
+            {% else %}
+                &rarr;
+            {% endif %}
+        </span>
+        <span class="fs-4">
+            <a href="{% url 'games:detail' chessgame.pk chessgame.total_ply_count %}" class="text-white">&rarrb;</a>
+        </span>
+    </div>
+
+    <hr>
+    <ul class="nav nav-pills flex-column mb-auto">
+        <li class="nav-item">
+            {% if variations|length > 1 %}
+            <div class="dropdown-center d-grid gap-2">
+                <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Variations
+                </button>
+                <ul class="dropdown-menu">
+                    {% for variation in variations %}
+                    <li><a class="dropdown-item text-center" href="#">{{ forloop.counter }}</a></li>
+                    {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+        </li>
+        <li class="nav-item">
+            <span class="nav-link text-white">Move: {{ last_move }}</span>
+        </li>
+        <li class="nav-item">
+            {% if eval %}
+                <span class="nav-link text-white">Eval: {{ eval }}</span>
+            {% else %}
+                <a href="{% url 'games:analyze' chessgame.pk %}" class="nav-link bg-primary text-white">Analyze @35</a>
+            {% endif %}
+        </li>
+    </ul>
+    <div class="form-group">
+        <form action="{% url 'games:comment' chessgame.pk current_ply %}" method="POST">
+            {% csrf_token %}
+            {{ comment_form }}
+            <button type="submit" class="btn btn-primary btn-sm btn-block form-control">&check;</button>
+        </form>
+    </div>
+</div>
+
+{% endblock subsidebar %}
+{% block title %}{{ chessgame }}{% endblock title %}
+{% block subtitle %}{{ chessgame }}{% endblock subtitle %}
+{% block content %}
+    <span class="small text-center text-bg-dark">{{ chessgame.black }} {% if chessgame.black_elo %}({{ chessgame.black_elo }}) {% endif %}</span>
+    {{ svg | safe }}
+    <span class="small text-center text-bg-light">{{ chessgame.white }} {% if chessgame.white_elo %}({{ chessgame.white_elo }}) {% endif %}</span>
+{% endblock content %}

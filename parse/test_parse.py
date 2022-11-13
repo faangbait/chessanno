@@ -18,7 +18,7 @@ def mate_in_one():
     return chess.Board("rnbqkbnr/ppppp2p/5p2/6p1/3PP3/8/PPP2PPP/RNBQKBNR w KQkq - 0 3")
 
 def test_analyze(mate_in_one):
-    assert analyze.fish(mate_in_one.fen())  > 90000
+    assert analyze.fish_eval(analyze.fish(mate_in_one.fen()))  > 90000
 
 # TODO rewrite as command call
 # def test_import():

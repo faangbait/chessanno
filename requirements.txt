@@ -1,2 +1,3 @@
 python-chess
 git+https://github.com/faangbait/normalize_human_name.git@main#egg=formatname
+fontawesomefree==6

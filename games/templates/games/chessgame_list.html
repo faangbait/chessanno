@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Game List{% endblock title %}
+{% block content %}
+    <div class="px-3">
+    {% regroup chessgame_list by event as chessgame_event_list %}
+        {% for event in chessgame_event_list %}
+        <span class="fs-4"><span class="fw-bold">{{ event.grouper.name }}</span> ({{ event.grouper.site }})</span>
+            <table class="table table-dark table-sm">
+                <thead>
+                    <th></th>
+                    <th>Date</th>
+                    <th>White</th>
+                    <th>Black</th>
+                    <th>Result</th>
+                </thead>
+                <tbody>
+                    {% for game in event.list %}
+                    <tr>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{% url 'games:detail' game.pk %}" class="btn btn-success"><i class="fa-solid fa-book"></i></a>
+                                <a href="{% url 'games:analyze' game.pk %}" class="btn {% if game.processed_pgn %}btn-success{% else %}btn-secondary{% endif %}"><i class="fa-solid fa-magnifying-glass"></i></a>
+                                <a href="" class="btn {% if game.video_url %}btn-success{% else %} btn-secondary{% endif %}"><i class="fa-solid fa-video"></i></a>
+                                <a href="" class="btn btn-warning"><i class="fa-solid fa-x"></i></a>
+                            </div>
+                        </td>
+                        <td>{{ game.date }}</td>
+                        <td>{{ game.white }}</td>
+                        <td>{{ game.black }}</td>
+                        <td>{{ game.result }}</td>
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endfor %}
+    </div>
+{% endblock content %}
