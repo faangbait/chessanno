@@ -109,7 +109,7 @@ class Command(BaseCommand):
                         "black": black_player,
                         "white_elo": white_elo,
                         "black_elo": black_elo,
-                        "total_ply_count": int(importer.game.headers.get("TotalPlyCount",0)),
+                        "total_ply_count": importer.game.end().ply(),
                         "imported_pgn": imported_pgn
                     }
                 )
